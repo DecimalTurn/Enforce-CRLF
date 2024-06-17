@@ -5,7 +5,7 @@ branding:
   color: "blue"
 runs:
   using: "composite"
-  runs-on: ubuntu-latest
+  # runs-on: ubuntu-latest
   steps:
   - uses: actions/checkout@v4
   - name: Set up Python 3.10
@@ -22,9 +22,11 @@ runs:
       sudo ln -s /usr/bin/fromdos /usr/bin/dos2unix
       sudo ln -s /usr/bin/todos /usr/bin/unix2dos
       # TODO: Use Cache for APT: https://github.com/marketplace/actions/cache-apt-packages
+    shell: bash
   - name: Run script
     run: |
       python './enforce-crlf/enforce-crlf.py'
+    shell: bash
   - name: Push content
     run: |
       git config user.name github-actions
@@ -46,3 +48,4 @@ runs:
       else
         echo "No changes to commit"
       fi
+    shell: bash
