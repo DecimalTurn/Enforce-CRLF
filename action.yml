@@ -1,0 +1,69 @@
+name: Enforce-CRLF
+description: 'Enforce CRLF.'
+branding:
+  icon: "corner-down-left"
+  color: "blue"
+inputs:
+  extensions:
+    description: 'List of extensions (including the dot) seperated by a comma.'
+    required: true
+  bot-name:
+    description: 'Name of the bot that will perform the commit.'
+    default: 'github-actions[bot]'
+  bot-email:
+    description: 'Email of the bot that will perform the commit.'
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
+runs:
+  using: "composite"
+  steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+  - name: Set up Python 3.10
+    uses: actions/setup-python@v5
+    with:
+      python-version: "3.10"
+  - name: Get tofrodos package
+    uses: awalsh128/cache-apt-pkgs-action@latest
+    with:
+      packages: tofrodos
+      version: 1.0
+  - name: Run script
+    run: |
+      python '${{ github.action_path }}/enforce-crlf.py' "${{ inputs.extensions }}"
+    shell: bash
+  - name: Push content
+    uses: stefanzweifel/git-auto-commit-action@v5
+    with:
+      # Optional. Commit message for the created commit.
+      # Defaults to "Apply automatic changes"
+      commit_message: "Enforce CRLF\n\nGitHub Action: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      # Optional commit user and author settings
+      commit_user_name: ${{ inputs.bot-name }} # defaults to "github-actions[bot]"
+      commit_user_email: ${{ inputs.bot-email }} # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
+  
+  # Alternative approach to Push content using a bash script
+  # - name: Push content
+  #   run: |
+  #     git config user.name "${{ inputs.bot-name }}"
+  #     git config user.email "${{ inputs.bot-email }}"
+      
+  #     # Create an array of extensions
+  #     IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
+      
+  #     # Add files with the specified extensions
+  #     for ext in "${extensions[@]}"; do
+  #       trimmed_ext=$(echo "$ext" | xargs)  # Trim spaces
+  #       echo "Adding files with extension: *$trimmed_ext"
+  #       git add -v *"$trimmed_ext" || true
+  #     done
+      
+  #     git status
+  #     if [ -n "$(git diff --cached --exit-code)" ]; then
+  #       echo "Changes detected"
+  #       commit_message=$(printf "Enforce CRLF\n\nGitHub Action: %s/%s/actions/runs/%s" "${{ github.server_url }}" "${{ github.repository }}" "${{ github.run_id }}")
+  #       git commit -m "$commit_message"        
+  #       git push --set-upstream origin $branch_name
+  #     else
+  #       echo "No changes to commit"
+  #     fi
+  #   shell: bash
