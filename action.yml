@@ -15,24 +15,12 @@ inputs:
     default: 'github-actions@github.com'
 runs:
   using: "composite"
-  # runs-on: ubuntu-latest
   steps:
   - uses: actions/checkout@v4
   - name: Set up Python 3.10
     uses: actions/setup-python@v5
     with:
       python-version: "3.10"
-  #- name: Install other dependencies
-  #  run: |
-  #    # REF: https://gist.github.com/sixman9/4082576
-  #    # Install unix2dos and dos2unix on Ubuntu Linux
-  #    # unix2dos and dos2unix are replace with todos and fromdos
-  #    # We'll install those and then alias them
-  #    sudo apt-get install tofrodos
-  #    sudo ln -s /usr/bin/fromdos /usr/bin/dos2unix
-  #    sudo ln -s /usr/bin/todos /usr/bin/unix2dos
-  #    # TODO: Use Cache for APT: https://github.com/marketplace/actions/cache-apt-packages
-  #  shell: bash
   - name: Get tofrodos package
     uses: awalsh128/cache-apt-pkgs-action@latest
     with:
@@ -46,15 +34,13 @@ runs:
     run: |
       git config user.name ${{ inputs.bot-name }}
       git config user.email ${{ inputs.bot-email }}
-
-      # Add .bas files if they exist
-      git add *.bas || true
-
-      # Add .cls files if they exist
-      git add *.cls || true
-
-      # Add .frm files if they exist
-      git add *.frm || true
+      
+      # Add files with the specified extensions
+      IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
+      for ext in "${extensions[@]}"; do
+        git add *"$ext" || true
+      done
+      
       git status
       if [ -n "$(git diff --cached --exit-code)" ]; then
         echo "Changes detected"
