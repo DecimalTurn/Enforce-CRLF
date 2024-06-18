@@ -4,7 +4,7 @@ import subprocess
 
 def needs_conversion_to_crlf(filepath):
     file_info = subprocess.check_output(['file', filepath], universal_newlines=True)
-    print(file_info)
+    print(file_info + "|")
     if ", with no line terminators" in file_info or file_info.endswith("empty"):
         return False
     return ", with CRLF line terminators" not in file_info
