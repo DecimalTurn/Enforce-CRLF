@@ -13,7 +13,7 @@ def convert_lf_to_crlf(filepath):
     try:
         # Use the subprocess module to run the unix2dos command
         subprocess.run(["unix2dos", filepath], check=True)
-        print(f"✅ {filepath} line endings were replaced")
+        print(f"☑ {filepath} line endings were replaced")
     except subprocess.CalledProcessError as e:
         print(f"🔴 {filepath} returned an error while converting: {e}")
         sys.exit(1)
