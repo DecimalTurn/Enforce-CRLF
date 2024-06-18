@@ -31,7 +31,7 @@ runs:
     shell: bash
   - name: Run script
     run: |
-      echo $EXTENSIONS
+      echo "$EXTENSIONS"
       python '${{ github.action_path }}/enforce-crlf.py'
     shell: bash
   - name: Push content
