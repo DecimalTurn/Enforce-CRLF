@@ -10,6 +10,9 @@ inputs:
   bot-name:
     description: 'Name of the bot that will perform the commit.'
     default: 'github-actions'
+  bot-email:
+    description: 'Email of the bot that will perform the commit.'
+    default: 'github-actions@github.com'
 runs:
   using: "composite"
   # runs-on: ubuntu-latest
@@ -42,7 +45,7 @@ runs:
   - name: Push content
     run: |
       git config user.name ${{ inputs.bot-name }}
-      git config user.email github-actions@github.com
+      git config user.email ${{ inputs.bot-email }}
 
       # Add .bas files if they exist
       git add *.bas || true
