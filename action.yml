@@ -5,7 +5,7 @@ branding:
   color: "blue"
 inputs:
   extensions:
-    description: 'List of extensions (including the dot) seperated by a comma.
+    description: 'List of extensions (including the dot) seperated by a comma.'
     required: true
 runs:
   using: "composite"
