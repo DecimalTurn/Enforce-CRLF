@@ -16,7 +16,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - uses: actions/checkout@v4
+  - name: Checkout
+    uses: actions/checkout@v4
   - name: Set up Python 3.10
     uses: actions/setup-python@v5
     with:
@@ -35,11 +36,17 @@ runs:
       git config user.name ${{ inputs.bot-name }}
       git config user.email ${{ inputs.bot-email }}
       
-      # Add files with the specified extensions
+      # Create an array of extensions
       IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
+      
+      # Build the git add pattern
+      add_pattern=""
       for ext in "${extensions[@]}"; do
-        git add *"$ext" || true
+        trimmed_ext=$(echo "$ext" | xargs)  # Trim spaces
+        add_pattern="$add_pattern *$trimmed_ext"
       done
+
+      git add $add_pattern || true
       
       git status
       if [ -n "$(git diff --cached --exit-code)" ]; then
