@@ -1,4 +1,5 @@
 import os
+import argparse
 import sys
 import subprocess
 
@@ -39,10 +40,12 @@ def copy_file(source, destination):
 
 def main():
     repo_dir = "/home/runner/work/"
+    # Split the extensions string into a list and strip whitespace
+    extensions_list = tuple(ext.strip() for ext in extensions.split(','))
     files = [] 
     for root, _, filenames in os.walk(repo_dir):
         for filename in filenames:
-            if filename.endswith((".bas", ".frm", ".cls")):
+            if filename.endswith(extensions_list):
                 filepath = os.path.join(root, filename)
                 files.append(filepath)
 
@@ -56,6 +59,11 @@ def main():
         print("No files with the specified extensions found in the repository.")
     else:
         print(f"Found {len(files)} file(s) with the specified extensions.")
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Process files with specified extensions in a directory.")
+    parser.add_argument('extensions', type=str, help='Comma-separated list of file extensions to process')
+    return parser.parse_args()
 
 if __name__ == "__main__":
     main()
