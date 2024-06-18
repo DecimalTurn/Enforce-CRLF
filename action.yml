@@ -42,6 +42,7 @@ runs:
       # Add files with the specified extensions
       for ext in "${extensions[@]}"; do
         trimmed_ext=$(echo "$ext" | xargs)  # Trim spaces
+        echo *"$trimmed_ext"
         git add -v *"$trimmed_ext" || true
       done
       
