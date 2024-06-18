@@ -11,15 +11,15 @@ def needs_conversion_to_crlf(filepath):
 
 def convert_lf_to_crlf(filepath):
     try:
-        # Use the subprocess module to run the unix2dos command
+        # Use the subprocess module to run the fromdos (aka. unix2dos) command
         print(f"🟡 {filepath} needs line endings replacement")
-        subprocess.run(["unix2dos", filepath], check=True)
+        subprocess.run(["fromdos", filepath], check=True)
         print(f"🟢 {filepath} had there line endings replaced")
     except subprocess.CalledProcessError as e:
         print(f"🔴 {filepath} returned an error while converting: {e}")
         sys.exit(1)
     except FileNotFoundError:
-        print("⚠ Error: unix2dos command not found. Make sure it's installed and in your PATH.")
+        print("⚠ Error: fromdos command not found. Make sure it's installed and in your PATH.")
         sys.exit(1)
 
 def copy_file(source, destination):
