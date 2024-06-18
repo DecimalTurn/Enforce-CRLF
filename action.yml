@@ -25,7 +25,7 @@ runs:
     shell: bash
   - name: Run script
     run: |
-      python '${{ github.action_path }}/enforce-crlf/enforce-crlf.py'
+      python '${{ github.action_path }}/enforce-crlf.py'
     shell: bash
   - name: Push content
     run: |
