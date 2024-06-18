@@ -39,14 +39,11 @@ runs:
       # Create an array of extensions
       IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
       
-      # Build the git add pattern
-      add_pattern=""
+      # Add files with the specified extensions
       for ext in "${extensions[@]}"; do
         trimmed_ext=$(echo "$ext" | xargs)  # Trim spaces
-        add_pattern="$add_pattern *$trimmed_ext"
+        git add *"$trimmed_ext" || true
       done
-
-      git add $add_pattern || true
       
       git status
       if [ -n "$(git diff --cached --exit-code)" ]; then
