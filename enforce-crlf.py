@@ -38,7 +38,7 @@ def copy_file(source, destination):
     except Exception as e:
         print(f"An error occurred while copying the file: {e}")
 
-def main():
+def main(extensions):
     repo_dir = "/home/runner/work/"
     # Split the extensions string into a list and strip whitespace
     extensions_list = tuple(ext.strip() for ext in extensions.split(','))
@@ -66,4 +66,5 @@ def parse_arguments():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main()
+    args = parse_arguments()
+    main(args.extensions)
