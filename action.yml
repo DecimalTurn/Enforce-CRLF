@@ -4,9 +4,12 @@ branding:
   icon: "corner-down-left"
   color: "blue"
 inputs:
-  extensions:
-    description: 'List of extensions (including the dot) seperated by a comma.'
-    required: true
+  - extensions:
+      description: 'List of extensions (including the dot) seperated by a comma.'
+      required: true
+  - bot-name:
+      description: 'Name of the bot that will perform the commit.'
+      default: 'github-actions'
 runs:
   using: "composite"
   # runs-on: ubuntu-latest
@@ -38,7 +41,7 @@ runs:
     shell: bash
   - name: Push content
     run: |
-      git config user.name github-actions
+      git config user.name ${{ inputs.bot-name }}
       git config user.email github-actions@github.com
 
       # Add .bas files if they exist
