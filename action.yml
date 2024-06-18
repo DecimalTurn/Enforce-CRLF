@@ -4,12 +4,12 @@ branding:
   icon: "corner-down-left"
   color: "blue"
 inputs:
-  - extensions:
-      description: 'List of extensions (including the dot) seperated by a comma.'
-      required: true
-  - bot-name:
-      description: 'Name of the bot that will perform the commit.'
-      default: 'github-actions'
+  extensions:
+    description: 'List of extensions (including the dot) seperated by a comma.'
+    required: true
+  bot-name:
+    description: 'Name of the bot that will perform the commit.'
+    default: 'github-actions'
 runs:
   using: "composite"
   # runs-on: ubuntu-latest
