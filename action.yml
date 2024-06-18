@@ -29,7 +29,6 @@ runs:
     shell: bash
   - name: Run script
     run: |
-      echo "${{ inputs.extensions }}"
       python '${{ github.action_path }}/enforce-crlf.py' "${{ inputs.extensions }}"
     shell: bash
   - name: Push content
