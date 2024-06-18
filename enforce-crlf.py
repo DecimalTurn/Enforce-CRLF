@@ -39,9 +39,7 @@ def copy_file(source, destination):
 
 def main():
     repo_dir = "/home/runner/work/"
-
     files = [] 
-
     for root, _, filenames in os.walk(repo_dir):
         for filename in filenames:
             if filename.endswith((".bas", ".frm", ".cls")):
@@ -49,7 +47,6 @@ def main():
                 files.append(filepath)
 
                 eol_result = needs_conversion_to_crlf(filepath)
-
                 if eol_result:
                     convert_lf_to_crlf(filepath)
                 else:
