@@ -1,25 +1,21 @@
 import os
 import sys
 import subprocess
-sys.path.insert(0, './.github/workflows/enforce-crlf/pytools')
-import utils
 
 def needs_conversion_to_crlf(filepath):
-
-    # Use the file command to get information about the file
     file_info = subprocess.check_output(['file', filepath], universal_newlines=True)
-    return "with CRLF line terminators" not in file_info
+    return ("with CRLF line terminators" not in file_info)
 
 def convert_lf_to_crlf(filepath):
     try:
         # Use the subprocess module to run the unix2dos command
         subprocess.run(["unix2dos", filepath], check=True)
-        print(f"✅ Line conversion successful: {filepath}")
+        print(f"{filepath} line endings were replaced ✅")
     except subprocess.CalledProcessError as e:
-        print(f"Error while converting {filepath}: {e}")
+        print(f"{filepath} returned an error while converting 🔴: {e}")
         sys.exit(1)
     except FileNotFoundError:
-        print("Error: unix2dos command not found. Make sure it's installed and in your PATH.")
+        print("⚠ Error: unix2dos command not found. Make sure it's installed and in your PATH.")
         sys.exit(1)
 
 def copy_file(source, destination):
@@ -39,27 +35,25 @@ def copy_file(source, destination):
         print(f"An error occurred while copying the file: {e}")
 
 def main():
-    package_dir = "/home/runner/work/"  # Replace with the actual path to your package subfolder
+    repo_dir = "/home/runner/work/"
 
-    files = []  # Initialize an empty list to store found files
+    files = [] 
 
-    for root, _, filenames in os.walk(package_dir):
+    for root, _, filenames in os.walk(repo_dir):
         for filename in filenames:
             if filename.endswith((".bas", ".frm", ".cls")):
                 filepath = os.path.join(root, filename)
-                files.append(filepath)  # Add found files to the list
+                files.append(filepath)
 
                 eol_result = needs_conversion_to_crlf(filepath)
 
                 if eol_result:
-                    #print(f"⚠ {filepath} doesn't have proper line endings.")
                     convert_lf_to_crlf(filepath)
-                    print(f"{filepath} line endings were replaced.")
                 else:
-                    print(f"{filepath} has correct line endings.")
+                    print(f"{filepath} has correct line endings 🟢")
 
     if not files:
-        print("No files with the specified extensions found in the directory.")
+        print("No files with the specified extensions found in the repository.")
     else:
         print(f"Found {len(files)} file(s) with the specified extensions.")
 
