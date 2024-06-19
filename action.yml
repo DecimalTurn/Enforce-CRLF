@@ -49,7 +49,7 @@ runs:
       git status
       if [ -n "$(git diff --cached --exit-code)" ]; then
         echo "Changes detected"
-        git commit -m "Enforce CRLF \n\n GitHub Action: https://github.com/${{ github.repository }}/actions/runs/${{ $github.run_id }}"
+        git commit -m "Enforce CRLF \n\n GitHub Action:  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         git push --set-upstream origin $branch_name
       else
         echo "No changes to commit"
