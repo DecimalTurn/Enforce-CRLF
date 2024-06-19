@@ -33,6 +33,10 @@ runs:
     shell: bash
   - name: Push content
     uses: stefanzweifel/git-auto-commit-action@v5
+    with:
+      # Optional. Commit message for the created commit.
+      # Defaults to "Apply automatic changes"
+      commit_message: "Enforce CRLF\n\nGitHub Action: %s/%s/actions/runs/%s" "${{ github.server_url }}" "${{ github.repository }}" "${{ github.run_id }}")
 
   # - name: Push content
   #   run: |
