@@ -31,8 +31,8 @@ runs:
     run: |
       python '${{ github.action_path }}/enforce-crlf.py' "${{ inputs.extensions }}"
     shell: bash
-    - name: Push content
-      uses: stefanzweifel/git-auto-commit-action@v5
+  - name: Push content
+    uses: stefanzweifel/git-auto-commit-action@v5
 
   # - name: Push content
   #   run: |
