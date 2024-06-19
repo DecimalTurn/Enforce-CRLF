@@ -37,7 +37,12 @@ runs:
       # Optional. Commit message for the created commit.
       # Defaults to "Apply automatic changes"
       commit_message: "Enforce CRLF\n\nGitHub Action: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
+      # Optional commit user and author settings
+      commit_user_name: ${{ inputs.bot-name }} # defaults to "github-actions[bot]"
+      commit_user_email: ${{ inputs.bot-email }} # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
+      commit_author: "" # defaults to "username <username@users.noreply.github.com>", where "username" belongs to the author of the commit that triggered the run
+  
+  # Alternative approach to Push content using a bash script
   # - name: Push content
   #   run: |
   #     git config user.name "${{ inputs.bot-name }}"
