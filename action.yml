@@ -9,10 +9,10 @@ inputs:
     required: true
   bot-name:
     description: 'Name of the bot that will perform the commit.'
-    default: 'github-actions'
+    default: 'github-actions[bot]'
   bot-email:
     description: 'Email of the bot that will perform the commit.'
-    default: 'github-actions@github.com'
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
 runs:
   using: "composite"
   steps:
@@ -40,7 +40,6 @@ runs:
       # Optional commit user and author settings
       commit_user_name: ${{ inputs.bot-name }} # defaults to "github-actions[bot]"
       commit_user_email: ${{ inputs.bot-email }} # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
-      commit_author: "" # defaults to "username <username@users.noreply.github.com>", where "username" belongs to the author of the commit that triggered the run
   
   # Alternative approach to Push content using a bash script
   # - name: Push content
