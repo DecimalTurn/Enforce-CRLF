@@ -36,7 +36,7 @@ runs:
     with:
       # Optional. Commit message for the created commit.
       # Defaults to "Apply automatic changes"
-      commit_message: "Enforce CRLF\n\nGitHub Action: %s/%s/actions/runs/%s" "${{ github.server_url }}" "${{ github.repository }}" "${{ github.run_id }}")
+      commit_message: "Enforce CRLF\n\nGitHub Action: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}""
 
   # - name: Push content
   #   run: |
