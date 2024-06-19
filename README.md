@@ -1,4 +1,4 @@
-A simple GitHub Action to enforce CRLF on selected files in your repo.
+A simple GitHub Action to enforce CRLF on selected file types in your repo.
 
 Example worflow:
 ```yml
