@@ -37,7 +37,8 @@ runs:
         result=$(git check-attr text *"${ext}")
         echo "$result"
         if [[ $result == *"text: auto" || $result == *"text: text" ]]; then
-          echo "There is an issue with ${ext}"
+          echo "There is an issue with the ${ext} extension. The `text` attribute is set or it has a value of `auto` for that extension."
+          echo "This means that you won't be able to commit changes with CRLF. You need to make sure that `text` is unspecified or unset (-text)"
           exit 1
         fi
       done
