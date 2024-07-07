@@ -34,7 +34,8 @@ runs:
     run: |
       IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
       for ext in "${ext_array[@]}"; do
-        result=$(git check-attr eol *"${ext}")
+        result=$(git check-attr text *"${ext}")
+        echo "$result"
         if [[ $result == *"text: auto" || $result == *"text: text" ]]; then
           echo "There is an issue with ${ext}"
           exit 1
