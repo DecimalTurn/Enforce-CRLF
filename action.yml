@@ -26,7 +26,7 @@ runs:
     run: |
       echo "extensions: '${{ inputs.extensions }}'"
       if [[ -z "${{ inputs.extensions }}" ]]; then
-        echo -e "${Red}"Error: No extensions provided."
+        echo -e "${Red}Error: No extensions provided."
         echo "Make sure you include the `extensions` input parameter. ie.:"
         echo "uses: DecimalTurn/Enforce-CRLF@main"
         echo "with:"
@@ -37,11 +37,11 @@ runs:
       for ext in "${ext_array[@]}"; do
         ext=$(echo "$ext" | xargs)  # Trim leading and trailing spaces
         if [[ $ext != .* ]]; then
-          echo -e "${Red}"Error: Extension '${ext}' does not begin with a dot."
+          echo -e "${Red}Error: Extension '${ext}' does not begin with a dot."
           exit 1
         fi
         if [[ $ext =~ \  ]]; then
-          echo -e "${Red}"Error: Extension '${ext}' contains a space."
+          echo -e "${Red}Error: Extension '${ext}' contains a space."
           exit 1
         fi
       done
