@@ -27,6 +27,9 @@ runs:
       git config --global core.autocrlf false
       git config --global core.eol lf
     shell: bash
+  - name: Checkout
+    if: ${{ inputs.do-checkout }}
+    uses: actions/checkout@v4
   - name: Check EOL configs
     run: |
       IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
@@ -34,9 +37,6 @@ runs:
         git check-attr eol *"${ext}"
       done
     shell: bash
-  - name: Checkout
-    if: ${{ inputs.do-checkout }}
-    uses: actions/checkout@v4
   - name: Set up Python 3.10
     uses: actions/setup-python@v5
     with:
