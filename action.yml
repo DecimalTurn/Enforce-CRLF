@@ -22,6 +22,25 @@ inputs:
 runs:
   using: "composite"
   steps:
+  - name: Check inputs
+    run: |
+      if [[ -z "${{ inputs.extensions }}" ]]; then
+        echo "Error: No extensions provided."
+        exit 1
+      fi
+      IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
+      for ext in "${ext_array[@]}"; do
+        ext=$(echo "$ext" | xargs)  # Trim leading and trailing spaces
+        if [[ $ext != .* ]]; then
+          echo "Error: Extension '${ext}' does not begin with a dot."
+          exit 1
+        fi
+        if [[ $ext =~ \  ]]; then
+          echo "Error: Extension '${ext}' contains a space."
+          exit 1
+        fi
+      done
+    shell: bash
   - name: Configure Git
     run: |
       git config --global core.autocrlf false
