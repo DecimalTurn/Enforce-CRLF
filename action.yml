@@ -34,7 +34,7 @@ runs:
     run: |
       IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
       for ext in "${ext_array[@]}"; do
-        git check-attr eol *"${ext}"
+        git check-attr text *"${ext}"
       done
     shell: bash
   - name: Set up Python 3.10
