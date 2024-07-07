@@ -7,6 +7,12 @@ inputs:
   extensions:
     description: 'List of extensions (including the dot) seperated by a comma.'
     required: true
+  do-checkout:
+    description: 'Set to true in order to let the action perform the checkout for you (default = false).'
+    default: false    
+  do-push:
+    description: 'Set to true in order to let the action perform the checkout for you (default = false).'
+    default: false
   bot-name:
     description: 'Name of the bot that will perform the commit.'
     default: 'github-actions[bot]'
@@ -16,8 +22,27 @@ inputs:
 runs:
   using: "composite"
   steps:
+  - name: Configure Git
+    run: |
+      git config --global core.autocrlf false
+      git config --global core.eol lf
+    shell: bash
   - name: Checkout
+    if: ${{ inputs.do-checkout }}
     uses: actions/checkout@v4
+  - name: Check EOL configs
+    run: |
+      IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
+      for ext in "${ext_array[@]}"; do
+        result=$(git check-attr text *"${ext}")
+        echo "$result"
+        if [[ $result == *"text: auto" || $result == *"text: text" ]]; then
+          echo "There is an issue with the ${ext} extension. The `text` attribute is set or it has a value of `auto` for that extension."
+          echo "This means that you won't be able to commit changes with CRLF. You need to make sure that `text` is unspecified or unset (-text)"
+          exit 1
+        fi
+      done
+    shell: bash
   - name: Set up Python 3.10
     uses: actions/setup-python@v5
     with:
@@ -32,6 +57,7 @@ runs:
       python '${{ github.action_path }}/enforce-crlf.py' "${{ inputs.extensions }}"
     shell: bash
   - name: Push content
+    if: ${{ inputs.do-push }}
     uses: stefanzweifel/git-auto-commit-action@v5
     with:
       # Optional. Commit message for the created commit.
