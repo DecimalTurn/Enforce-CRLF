@@ -25,7 +25,7 @@ runs:
   - name: Check inputs
     run: |
       if [[ -z "${{ inputs.extensions }}" ]]; then
-        echo "Error: No extensions provided."
+        echo -e "${Red}"Error: No extensions provided."
         echo "Make sure you include the `extensions` input parameter. ie.:"
         echo "uses: DecimalTurn/Enforce-CRLF@main"
         echo "with:"
