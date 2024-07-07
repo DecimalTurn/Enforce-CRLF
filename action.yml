@@ -26,6 +26,10 @@ runs:
     run: |
       if [[ -z "${{ inputs.extensions }}" ]]; then
         echo "Error: No extensions provided."
+        echo "Make sure you include the `extensions` input parameter. ie.:"
+        echo "uses: DecimalTurn/Enforce-CRLF@main"
+        echo "with:"
+        echo "  extensions: .bas, .frm, .cls"
         exit 1
       fi
       IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
