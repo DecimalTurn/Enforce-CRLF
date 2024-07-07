@@ -27,7 +27,7 @@ runs:
       echo "extensions: '${{ inputs.extensions }}'"
       if [[ -z "${{ inputs.extensions }}" ]]; then
         echo "🔴 Error: No extensions provided."
-        echo "Make sure you include the `extensions` input parameter. ie.:"
+        echo "Make sure you include the extension input parameter. ie.:"
         echo "  uses: DecimalTurn/Enforce-CRLF@main"
         echo "  with:"
         echo "    extensions: .bas, .frm, .cls"
