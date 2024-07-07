@@ -32,14 +32,14 @@ runs:
     uses: actions/checkout@v4
   - name: Check EOL configs
     run: |
-    IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
-    for ext in "${ext_array[@]}"; do
-      result=$(git check-attr eol *"${ext}")
-      if [[ $result == *"text: auto" || $result == *"text: text" ]]; then
-        echo "There is an issue with ${ext}"
-        exit 1
-      fi
-    done
+      IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
+      for ext in "${ext_array[@]}"; do
+        result=$(git check-attr eol *"${ext}")
+        if [[ $result == *"text: auto" || $result == *"text: text" ]]; then
+          echo "There is an issue with ${ext}"
+          exit 1
+        fi
+      done
     shell: bash
   - name: Set up Python 3.10
     uses: actions/setup-python@v5
