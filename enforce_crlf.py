@@ -3,11 +3,13 @@ import argparse
 import sys
 import subprocess
 
+
 def needs_conversion_to_crlf(filepath):
     file_info = subprocess.check_output(['file', filepath], universal_newlines=True)
     if ", with no line terminators" in file_info or file_info.endswith("empty\n"):
         return False
     return ", with CRLF line terminators" not in file_info
+
 
 def convert_lf_to_crlf(filepath):
     try:
@@ -21,6 +23,7 @@ def convert_lf_to_crlf(filepath):
     except FileNotFoundError:
         print("⚠ Error: todos command not found. Make sure it's installed and in your PATH.")
         sys.exit(1)
+
 
 def copy_file(source, destination):
     try:
@@ -37,6 +40,7 @@ def copy_file(source, destination):
         print(f"File '{source}' copied to '{destination}' successfully.")
     except Exception as e:
         print(f"An error occurred while copying the file: {e}")
+
 
 def main(extensions):
     repo_dir = "/home/runner/work/"
@@ -60,10 +64,12 @@ def main(extensions):
     else:
         print(f"Found {len(files)} file(s) with the specified extensions.")
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Process files with specified extensions in a directory.")
     parser.add_argument('extensions', type=str, help='Comma-separated list of file extensions to process')
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parse_arguments()
