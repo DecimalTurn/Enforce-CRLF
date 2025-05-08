@@ -46,7 +46,7 @@ def main(extensions):
     repo_dir = "/home/runner/work/"
     # Split the extensions string into a list and strip whitespace
     extensions_list = tuple(ext.strip() for ext in extensions.split(','))
-    files = [] 
+    files = []
     for root, _, filenames in os.walk(repo_dir):
         for filename in filenames:
             if filename.endswith(extensions_list):
