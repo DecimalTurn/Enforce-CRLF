@@ -37,5 +37,5 @@ jobs:
           exit 1
         fi
     - name: Run Flake8
-      run: flake8
+      run: flake8 --max-line-length=120
 
