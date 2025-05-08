@@ -70,7 +70,7 @@ runs:
   - name: Set up Python 3.10
     uses: actions/setup-python@v5
     with:
-      python-version: "3.10"
+      python-version: "3.13"
   - name: Get tofrodos package
     uses: awalsh128/cache-apt-pkgs-action@5902b33ae29014e6ca012c5d8025d4346556bd40 #v1.4.3
     with:

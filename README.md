@@ -1,6 +1,6 @@
 A simple GitHub Action to enforce CRLF on selected file types in your repo.
 
-Example worflow:
+## Example worflow:
 
 `Path: /.github/workflows/enforce-crlf.yml`
 ```yml
