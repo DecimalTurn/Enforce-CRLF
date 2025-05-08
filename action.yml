@@ -78,7 +78,7 @@ runs:
       version: 1.0
   - name: Run script
     run: |
-      python '${{ github.action_path }}/enforce-crlf.py' "${{ inputs.extensions }}"
+      python '${{ github.action_path }}/enforce_crlf.py' "${{ inputs.extensions }}"
     shell: bash
   - name: Push content
     if: ${{ inputs.do-push }}
