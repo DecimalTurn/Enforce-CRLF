@@ -4,7 +4,7 @@ A simple GitHub Action to enforce CRLF on selected file types in your repo.
 
 `Path: /.github/workflows/enforce-crlf.yml`
 ```yml
-name: Force CRLF for files inside the index
+name: Force CRLF for files inside the Git index
 
 on:
   push:
