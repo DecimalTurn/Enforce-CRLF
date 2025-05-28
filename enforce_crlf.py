@@ -42,11 +42,12 @@ def copy_file(source, destination):
         print(f"An error occurred while copying the file: {e}")
 
 
-def main(extensions):
+def main(extensions, fail_on_lf=False):
     repo_dir = "/home/runner/work/"
     # Split the extensions string into a list and strip whitespace
     extensions_list = tuple(ext.strip() for ext in extensions.split(','))
     files = []
+    files_needing_conversion = []
     for root, _, filenames in os.walk(repo_dir):
         for filename in filenames:
             if filename.endswith(extensions_list):
@@ -55,7 +56,11 @@ def main(extensions):
 
                 eol_result = needs_conversion_to_crlf(filepath)
                 if eol_result:
-                    convert_lf_to_crlf(filepath)
+                    files_needing_conversion.append(filepath)
+                    if not fail_on_lf:
+                        convert_lf_to_crlf(filepath)
+                    else:
+                        print(f"🔴 {filepath} needs line endings replacement")
                 else:
                     print(f"🟢 {filepath} has correct line endings")
 
@@ -64,13 +69,21 @@ def main(extensions):
     else:
         print(f"Found {len(files)} file(s) with the specified extensions.")
 
+    if fail_on_lf and files_needing_conversion:
+        print(f"\n🔴 {len(files_needing_conversion)} file(s) need CRLF conversion:")
+        for f in files_needing_conversion:
+            print(f"  - {f}")
+        sys.exit(2)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Process files with specified extensions in a directory.")
-    parser.add_argument('extensions', type=str, help='Comma-separated list of file extensions to process')
+    parser.add_argument('--extensions', type=str, required=True, help='Comma-separated list of file extensions to process')
+    parser.add_argument('--fail-on-lf', type=str, default="false", help='Fail if files need CRLF conversion (true/false)')
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_arguments()
-    main(args.extensions)
+    fail_on_lf = str(args.fail_on_lf).lower() == "true"
+    main(args.extensions, fail_on_lf=fail_on_lf)
