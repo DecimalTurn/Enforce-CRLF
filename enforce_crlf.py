@@ -78,8 +78,10 @@ def main(extensions, fail_on_lf=False):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Process files with specified extensions in a directory.")
-    parser.add_argument('--extensions', type=str, required=True, help='Comma-separated list of file extensions to process')
-    parser.add_argument('--fail-on-lf', type=str, default="false", help='Fail if files need CRLF conversion (true/false)')
+    parser.add_argument('--extensions', type=str, required=True,
+                        help='Comma-separated list of file extensions to process')
+    parser.add_argument('--fail-on-lf', type=str, default="false",
+                        help='Fail if files need CRLF conversion (true/false)')
     return parser.parse_args()
 
 
