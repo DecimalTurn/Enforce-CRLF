@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Enforce CRLF action
-      uses: DecimalTurn/Enforce-CRLF@ec751ecfeb0e0cf51d19f295435c7a6ec10bac15 #v1.1.3
+      uses: DecimalTurn/Enforce-CRLF@2b2f7b4f08a0d4f380f2d8be6b42e7d46e076065 #v1.2.0
       with:
         extensions: .bas, .frm, .cls
         do-checkout: true
