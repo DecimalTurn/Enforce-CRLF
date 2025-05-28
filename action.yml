@@ -7,6 +7,10 @@ inputs:
   extensions:
     description: 'List of extensions (including the dot) seperated by a comma.'
     required: true
+  fail-on-lf:
+    description: 'If true, fail the workflow if any files need to be converted (do not auto-fix, just report and fail).'
+    required: false
+    default: false
   do-checkout:
     description: 'Set to true in order to let the action perform the checkout for you (default = false).'
     default: false    
@@ -19,6 +23,7 @@ inputs:
   bot-email:
     description: 'Email of the bot that will perform the commit.'
     default: '41898282+github-actions[bot]@users.noreply.github.com'
+
 runs:
   using: "composite"
   steps:
@@ -78,7 +83,7 @@ runs:
       version: 1.0
   - name: Run script
     run: |
-      python '${{ github.action_path }}/enforce_crlf.py' "${{ inputs.extensions }}"
+      python '${{ github.action_path }}/enforce_crlf.py' --extensions "${{ inputs.extensions }}" --fail-on-lf "${{ inputs.fail-on-lf }}"
     shell: bash
   - name: Push content
     if: ${{ inputs.do-push }}
