@@ -1,0 +1,18 @@
+name: Update Tags
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  update-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Tags
+        uses: cssnr/update-version-tags-action@06ac3e56e828129c17054b39d11317584af1bd88 # v1.3.1
+        with:
+          major: true
+          minor: false
