@@ -58,7 +58,7 @@ runs:
     shell: bash
   - name: Checkout
     if: ${{ inputs.do-checkout }}
-    uses: actions/checkout@v5
+    uses: actions/checkout@v6
   - name: Check EOL configs
     run: |
       IFS=',' read -r -a ext_array <<< "${{ inputs.extensions }}"
