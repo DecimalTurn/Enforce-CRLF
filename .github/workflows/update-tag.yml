@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update Tags
-        uses: cssnr/update-version-tags-action@1ff20ac5555f024f5e72b7ccdf165b867878f953 # v2.0.0
+        uses: cssnr/update-version-tags-action@f3849a957cc45bae43abd0b41566ab269ec4fe02 # v2.1.0
         with:
           major: true
           minor: false
