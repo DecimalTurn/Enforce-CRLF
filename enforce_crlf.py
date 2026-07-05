@@ -2,6 +2,7 @@ import os
 import argparse
 import sys
 
+
 def analyze_line_endings_data(data):
     counts = {
         "LF": 0,
@@ -34,6 +35,7 @@ def analyze_line_endings_data(data):
         eol_status = f"Mixed ({' + '.join(present_statuses)})"
 
     return counts, eol_status
+
 
 def convert_to_crlf(filepath, data, counts):
     try:
@@ -73,6 +75,7 @@ def convert_to_crlf(filepath, data, counts):
         print(f"🔴 {filepath} returned an error while converting: {e}")
         sys.exit(1)
 
+
 def copy_file(source, destination):
     try:
         # Ensure the destination directory exists
@@ -88,6 +91,7 @@ def copy_file(source, destination):
         print(f"File '{source}' copied to '{destination}' successfully.")
     except Exception as e:
         print(f"An error occurred while copying the file: {e}")
+
 
 def main(extensions, fail_on_lf=False):
     repo_dir = "/home/runner/work/"
