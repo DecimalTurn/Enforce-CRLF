@@ -33,7 +33,7 @@ runs:
       if [[ -z "${{ inputs.extensions }}" ]]; then
         echo "🔴 Error: No extensions provided."
         echo "Make sure you include the extensions input parameter. ie.:"
-        echo "  uses: DecimalTurn/Enforce-CRLF@main"
+        echo "  uses: DecimalTurn/Enforce-CRLF@v1"
         echo "  with:"
         echo "    extensions: .bas, .frm, .cls"
         exit 1
@@ -76,11 +76,6 @@ runs:
     uses: actions/setup-python@v6
     with:
       python-version: "3.14"
-  - name: Get tofrodos package
-    uses: awalsh128/cache-apt-pkgs-action@681749ae568c81c2037cb9185e38b709b261bd2f # v1.6.1
-    with:
-      packages: tofrodos
-      version: 1.0
   - name: Run script
     run: |
       python '${{ github.action_path }}/enforce_crlf.py' --extensions "${{ inputs.extensions }}" --fail-on-lf "${{ inputs.fail-on-lf }}"
@@ -95,30 +90,3 @@ runs:
       # Optional commit user and author settings
       commit_user_name: ${{ inputs.bot-name }} # defaults to "github-actions[bot]"
       commit_user_email: ${{ inputs.bot-email }} # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
-  
-  # Alternative approach to Push content using a bash script
-  # - name: Push content
-  #   run: |
-  #     git config user.name "${{ inputs.bot-name }}"
-  #     git config user.email "${{ inputs.bot-email }}"
-      
-  #     # Create an array of extensions
-  #     IFS=',' read -r -a extensions <<< "${{ inputs.extensions }}"
-      
-  #     # Add files with the specified extensions
-  #     for ext in "${extensions[@]}"; do
-  #       trimmed_ext=$(echo "$ext" | xargs)  # Trim spaces
-  #       echo "Adding files with extension: *$trimmed_ext"
-  #       git add -v *"$trimmed_ext" || true
-  #     done
-      
-  #     git status
-  #     if [ -n "$(git diff --cached --exit-code)" ]; then
-  #       echo "Changes detected"
-  #       commit_message=$(printf "Enforce CRLF\n\nGitHub Action: %s/%s/actions/runs/%s" "${{ github.server_url }}" "${{ github.repository }}" "${{ github.run_id }}")
-  #       git commit -m "$commit_message"        
-  #       git push --set-upstream origin $branch_name
-  #     else
-  #       echo "No changes to commit"
-  #     fi
-  #   shell: bash
