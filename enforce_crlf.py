@@ -1,13 +1,9 @@
 import os
 import argparse
 import sys
-import subprocess
 
 
-def analyze_line_endings(filepath):
-    with open(filepath, 'rb') as file:
-        data = file.read()
-
+def analyze_line_endings_data(data):
     counts = {
         "LF": 0,
         "CRLF": 0,
@@ -41,19 +37,28 @@ def analyze_line_endings(filepath):
     return counts, label
 
 
-def needs_conversion_to_crlf(filepath):
-    _, label = analyze_line_endings(filepath)
-    return label not in (None, "CRLF")
+def analyze_line_endings(filepath):
+    with open(filepath, 'rb') as file:
+        data = file.read()
+
+    return analyze_line_endings_data(data)
 
 
-def has_lone_cr_line_endings(filepath):
-    counts, _ = analyze_line_endings(filepath)
-    return counts["CR"] > 0
+def analyze_file(filepath):
+    with open(filepath, 'rb') as file:
+        data = file.read()
+
+    counts, label = analyze_line_endings_data(data)
+    issue_reason = get_line_endings_issue_from_analysis(counts, label)
+    return {
+        "data": data,
+        "counts": counts,
+        "label": label,
+        "issue_reason": issue_reason,
+    }
 
 
-def get_line_endings_issue(filepath):
-    counts, label = analyze_line_endings(filepath)
-
+def get_line_endings_issue_from_analysis(counts, label):
     if counts["CR"] > 0:
         return "contains lone CR line endings"
 
@@ -69,20 +74,53 @@ def get_line_endings_issue(filepath):
     return f"contains {label} line endings"
 
 
-def convert_lf_to_crlf(filepath, issue_reason=None):
+def get_line_endings_issue(filepath, analysis=None):
+    if analysis is None:
+        analysis = analyze_file(filepath)
+    return analysis["issue_reason"]
+
+
+def convert_to_crlf(filepath, issue_reason, data, counts):
     try:
-        # Use the subprocess module to run the todos (aka. unix2dos) command
         if issue_reason:
             print(f"🟡 {filepath} {issue_reason} and needs line endings replacement")
         else:
             print(f"🟡 {filepath} needs line endings replacement")
-        subprocess.run(["todos", filepath], check=True)
-        print(f"    🟢 {filepath} had there line endings replaced")
-    except subprocess.CalledProcessError as e:
+
+        output_size = len(data) + counts["LF"] + counts["CR"]
+        converted = bytearray(output_size)
+
+        index = 0
+        output_index = 0
+        while index < len(data):
+            byte = data[index]
+            if byte == ord('\r'):
+                if index + 1 < len(data) and data[index + 1] == ord('\n'):
+                    converted[output_index] = ord('\r')
+                    converted[output_index + 1] = ord('\n')
+                    output_index += 2
+                    index += 2
+                else:
+                    converted[output_index] = ord('\r')
+                    converted[output_index + 1] = ord('\n')
+                    output_index += 2
+                    index += 1
+            elif byte == ord('\n'):
+                converted[output_index] = ord('\r')
+                converted[output_index + 1] = ord('\n')
+                output_index += 2
+                index += 1
+            else:
+                converted[output_index] = byte
+                output_index += 1
+                index += 1
+
+        with open(filepath, 'wb') as file:
+            file.write(converted)
+
+        print(f"    🟢 {filepath} had their line endings replaced")
+    except Exception as e:
         print(f"🔴 {filepath} returned an error while converting: {e}")
-        sys.exit(1)
-    except FileNotFoundError:
-        print("⚠ Error: todos command not found. Make sure it's installed and in your PATH.")
         sys.exit(1)
 
 
@@ -115,11 +153,18 @@ def main(extensions, fail_on_lf=False):
                 filepath = os.path.join(root, filename)
                 files.append(filepath)
 
-                issue_reason = get_line_endings_issue(filepath)
+                analysis = analyze_file(filepath)
+                issue_reason = analysis["issue_reason"]
+
                 if issue_reason:
                     files_needing_conversion.append((filepath, issue_reason))
                     if not fail_on_lf:
-                        convert_lf_to_crlf(filepath, issue_reason=issue_reason)
+                        convert_to_crlf(
+                            filepath,
+                            issue_reason=issue_reason,
+                            data=analysis["data"],
+                            counts=analysis["counts"],
+                        )
                     else:
                         print(f"🔴 {filepath} {issue_reason} and needs line endings replacement")
                 else:

@@ -1,12 +1,11 @@
 import pytest
-import subprocess
+from pathlib import Path
 from unittest.mock import patch, mock_open
 from enforce_crlf import (
     analyze_line_endings,
-    needs_conversion_to_crlf,
-    has_lone_cr_line_endings,
+    analyze_line_endings_data,
     get_line_endings_issue,
-    convert_lf_to_crlf,
+    convert_to_crlf,
     copy_file,
 )
 
@@ -39,26 +38,6 @@ def test_analyze_line_endings_no_terminators():
         assert label is None
 
 
-def test_needs_conversion_to_crlf_no_conversion_needed():
-    with patch("builtins.open", mock_open(read_data=b"a\r\nb\r\nc")):
-        assert not needs_conversion_to_crlf("dummy.txt")
-
-
-def test_needs_conversion_to_crlf_conversion_needed():
-    with patch("builtins.open", mock_open(read_data=b"a\nb\nc")):
-        assert needs_conversion_to_crlf("dummy.txt")
-
-
-def test_has_lone_cr_line_endings_true():
-    with patch("builtins.open", mock_open(read_data=b"a\rb\r\nc")):
-        assert has_lone_cr_line_endings("dummy.txt")
-
-
-def test_has_lone_cr_line_endings_false():
-    with patch("builtins.open", mock_open(read_data=b"a\r\nb\r\nc")):
-        assert not has_lone_cr_line_endings("dummy.txt")
-
-
 def test_get_line_endings_issue_lone_cr():
     with patch("builtins.open", mock_open(read_data=b"a\rb\r\nc")):
         assert get_line_endings_issue("dummy.txt") == "contains lone CR line endings"
@@ -75,29 +54,38 @@ def test_get_line_endings_issue_mixed_label():
 
 
 def test_convert_lf_to_crlf_success():
-    with patch("subprocess.run") as mock_run:
-        convert_lf_to_crlf("dummy.txt")
-        mock_run.assert_called_once_with(["todos", "dummy.txt"], check=True)
+    data = b"a\nb\nc"
+    counts, _ = analyze_line_endings_data(data)
+    with patch("builtins.open", mock_open(read_data=b"a\nb\nc")) as mocked_open:
+        convert_to_crlf("dummy.txt", issue_reason="needs LF to CRLF conversion", data=data, counts=counts)
+        mocked_open().write.assert_called_once_with(b"a\r\nb\r\nc")
 
 
 def test_convert_lf_to_crlf_lone_cr_message():
-    with patch("subprocess.run"), patch("builtins.print") as mock_print:
-        convert_lf_to_crlf("dummy.txt", issue_reason="contains lone CR line endings")
+    data = b"a\rb\r\nc"
+    counts, _ = analyze_line_endings_data(data)
+    with patch("builtins.open", mock_open(read_data=b"a\rb\r\nc")), patch("builtins.print") as mock_print:
+        convert_to_crlf("dummy.txt", issue_reason="contains lone CR line endings", data=data, counts=counts)
         mock_print.assert_any_call(
             "🟡 dummy.txt contains lone CR line endings and needs line endings replacement"
         )
 
 
-def test_convert_lf_to_crlf_todos_not_found():
-    with patch("subprocess.run", side_effect=FileNotFoundError):
-        with pytest.raises(SystemExit):
-            convert_lf_to_crlf("dummy.txt")
-
-
 def test_convert_lf_to_crlf_error():
-    with patch("subprocess.run", side_effect=subprocess.CalledProcessError(1, "todos")):
+    data = b"a\nb\nc"
+    counts, _ = analyze_line_endings_data(data)
+    with patch("builtins.open", side_effect=Exception("write error")):
         with pytest.raises(SystemExit):
-            convert_lf_to_crlf("dummy.txt")
+            convert_to_crlf("dummy.txt", issue_reason="needs LF to CRLF conversion", data=data, counts=counts)
+
+
+def test_convert_lf_to_crlf_mixed_endings_real_file(tmp_path):
+    sample = Path(tmp_path) / "sample.txt"
+    data = b"a\nb\rc\r\nd"
+    sample.write_bytes(data)
+    counts, _ = analyze_line_endings_data(data)
+    convert_to_crlf(str(sample), issue_reason="contains lone CR line endings", data=data, counts=counts)
+    assert sample.read_bytes() == b"a\r\nb\r\nc\r\nd"
 
 
 def test_copy_file_success():
