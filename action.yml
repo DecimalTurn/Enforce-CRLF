@@ -57,7 +57,7 @@ runs:
       git config --global core.eol lf
     shell: bash
   - name: Checkout
-    if: ${{ inputs.do-checkout }}
+    if: ${{ inputs.do-checkout == 'true' }}
     uses: actions/checkout@v7
   - name: Check EOL configs
     run: |
@@ -81,7 +81,7 @@ runs:
       python '${{ github.action_path }}/enforce_crlf.py' --extensions "${{ inputs.extensions }}" --fail-on-lf "${{ inputs.fail-on-lf }}"
     shell: bash
   - name: Push content
-    if: ${{ inputs.do-push }}
+    if: ${{ inputs.do-push == 'true' && inputs.fail-on-lf != 'true' }}
     uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
     with:
       # Optional. Commit message for the created commit.
