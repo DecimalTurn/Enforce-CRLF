@@ -11,10 +11,34 @@ def needs_conversion_to_crlf(filepath):
     return ", with CRLF line terminators" not in file_info
 
 
-def convert_lf_to_crlf(filepath):
+def has_lone_cr_line_endings(filepath):
+    with open(filepath, 'rb') as file:
+        data = file.read()
+
+    for index, byte in enumerate(data):
+        if byte == ord('\r'):
+            if index + 1 >= len(data) or data[index + 1] != ord('\n'):
+                return True
+    return False
+
+
+def get_line_endings_issue(filepath):
+    if has_lone_cr_line_endings(filepath):
+        return "contains lone CR line endings"
+
+    if not needs_conversion_to_crlf(filepath):
+        return None
+
+    return "needs LF to CRLF conversion"
+
+
+def convert_lf_to_crlf(filepath, issue_reason=None):
     try:
         # Use the subprocess module to run the todos (aka. unix2dos) command
-        print(f"🟡 {filepath} needs line endings replacement")
+        if issue_reason:
+            print(f"🟡 {filepath} {issue_reason} and needs line endings replacement")
+        else:
+            print(f"🟡 {filepath} needs line endings replacement")
         subprocess.run(["todos", filepath], check=True)
         print(f"    🟢 {filepath} had there line endings replaced")
     except subprocess.CalledProcessError as e:
@@ -54,13 +78,13 @@ def main(extensions, fail_on_lf=False):
                 filepath = os.path.join(root, filename)
                 files.append(filepath)
 
-                eol_result = needs_conversion_to_crlf(filepath)
-                if eol_result:
-                    files_needing_conversion.append(filepath)
+                issue_reason = get_line_endings_issue(filepath)
+                if issue_reason:
+                    files_needing_conversion.append((filepath, issue_reason))
                     if not fail_on_lf:
-                        convert_lf_to_crlf(filepath)
+                        convert_lf_to_crlf(filepath, issue_reason=issue_reason)
                     else:
-                        print(f"🔴 {filepath} needs line endings replacement")
+                        print(f"🔴 {filepath} {issue_reason} and needs line endings replacement")
                 else:
                     print(f"🟢 {filepath} has correct line endings")
 
@@ -71,8 +95,8 @@ def main(extensions, fail_on_lf=False):
 
     if fail_on_lf and files_needing_conversion:
         print(f"\n🔴 {len(files_needing_conversion)} file(s) need CRLF conversion:")
-        for f in files_needing_conversion:
-            print(f"  - {f}")
+        for f, issue_reason in files_needing_conversion:
+            print(f"  - {f}: {issue_reason}")
         sys.exit(2)
 
 
