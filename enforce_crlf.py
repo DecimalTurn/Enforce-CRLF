@@ -4,32 +4,69 @@ import sys
 import subprocess
 
 
-def needs_conversion_to_crlf(filepath):
-    file_info = subprocess.check_output(['file', filepath], universal_newlines=True)
-    if ", with no line terminators" in file_info or file_info.endswith("empty\n"):
-        return False
-    return ", with CRLF line terminators" not in file_info
-
-
-def has_lone_cr_line_endings(filepath):
+def analyze_line_endings(filepath):
     with open(filepath, 'rb') as file:
         data = file.read()
 
-    for index, byte in enumerate(data):
+    counts = {
+        "LF": 0,
+        "CRLF": 0,
+        "CR": 0,
+    }
+
+    index = 0
+    while index < len(data):
+        byte = data[index]
         if byte == ord('\r'):
-            if index + 1 >= len(data) or data[index + 1] != ord('\n'):
-                return True
-    return False
+            if index + 1 < len(data) and data[index + 1] == ord('\n'):
+                counts["CRLF"] += 1
+                index += 2
+            else:
+                counts["CR"] += 1
+                index += 1
+        elif byte == ord('\n'):
+            counts["LF"] += 1
+            index += 1
+        else:
+            index += 1
+
+    present_labels = [name for name in ("LF", "CRLF", "CR") if counts[name] > 0]
+    if not present_labels:
+        label = None
+    elif len(present_labels) == 1:
+        label = present_labels[0]
+    else:
+        label = f"Mixed ({' + '.join(present_labels)})"
+
+    return counts, label
+
+
+def needs_conversion_to_crlf(filepath):
+    _, label = analyze_line_endings(filepath)
+    return label not in (None, "CRLF")
+
+
+def has_lone_cr_line_endings(filepath):
+    counts, _ = analyze_line_endings(filepath)
+    return counts["CR"] > 0
 
 
 def get_line_endings_issue(filepath):
-    if has_lone_cr_line_endings(filepath):
+    counts, label = analyze_line_endings(filepath)
+
+    if counts["CR"] > 0:
         return "contains lone CR line endings"
 
-    if not needs_conversion_to_crlf(filepath):
+    if label is None or label == "CRLF":
         return None
 
-    return "needs LF to CRLF conversion"
+    if label.startswith("Mixed"):
+        return f"contains mixed line endings: {label}"
+
+    if label == "LF":
+        return "needs LF to CRLF conversion"
+
+    return f"contains {label} line endings"
 
 
 def convert_lf_to_crlf(filepath, issue_reason=None):
