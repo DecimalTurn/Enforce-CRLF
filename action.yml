@@ -75,7 +75,7 @@ runs:
   - name: Set up Python 3.10
     uses: actions/setup-python@v7
     with:
-      python-version: "3.14"
+      python-version: "3.15"
   - name: Run script
     run: |
       python '${{ github.action_path }}/enforce_crlf.py' --extensions "${{ inputs.extensions }}" --fail-on-lf "${{ inputs.fail-on-lf }}"
